@@ -66,6 +66,7 @@ class App extends Component {
 
     this.handleDeckSelected = this.handleDeckSelected.bind(this);
     this.nextCard = this.nextCard.bind(this);
+    this.resetAnswer = this.resetAnswer.bind(this);
     this.toggleRandom = this.toggleRandom.bind(this);
     this.handleKeyUp = this.handleKeyUp.bind(this);
   }
@@ -88,7 +89,6 @@ class App extends Component {
       b: 1,
       n: 2
     };
-    console.log(event.key);
     if (event.key === ' ') {
       this.showAnswer();
       return;
@@ -133,6 +133,13 @@ class App extends Component {
     });
   }
 
+  resetAnswer() {
+    this.setState({
+      status: 'normal',
+      answer: ''
+    });
+  }
+
   checkAnswer(answer) {
     this.setState({answer});
     if (answer === this.getCurrentCard().a) {
@@ -140,7 +147,7 @@ class App extends Component {
       setTimeout(this.nextCard, 500);
     } else {
       this.setState({status: 'wrong'}, () => {
-        setTimeout(() => this.setState({status: 'normal'}), 500);
+        setTimeout(this.resetAnswer, 500);
       })
     }
   }
