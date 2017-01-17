@@ -1,7 +1,7 @@
-import React from 'react';
-import { deckName, findDeck, getDeckNames } from './lib/decks.js';
-import DropDownMenu from 'material-ui/DropDownMenu';
-import MenuItem from 'material-ui/MenuItem';
+import React from 'react'
+import { deckName, findDeck, getDeckNames } from './lib/decks.js'
+import DropDownMenu from 'material-ui/DropDownMenu'
+import MenuItem from 'material-ui/MenuItem'
 
 export default function DeckSelector({
   decks,
@@ -15,7 +15,7 @@ export default function DeckSelector({
        >
         {
           getDeckNames(decks).map((name) => {
-            const deck = findDeck(name, decks);
+            const deck = findDeck(name, decks)
             return <MenuItem
                       key={name}
                       value={name}

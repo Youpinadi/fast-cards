@@ -1,5 +1,5 @@
 import theRock from './images/cage/the-rock.jpg'
-import raisingArizona from './images/cage/raising-arizona.jpg'
+import raisingArizona from './images/cage/raising-arizona.png'
 import seasonOfTheWitch from './images/cage/season-of-the-witch.jpg'
 import snakeEyes from './images/cage/snake-eyes.png'
 import benjaminGates from './images/cage/benjamin-gates.jpg'

@@ -1,31 +1,31 @@
-import React, { Component } from 'react';
-import classNames from 'classnames';
+import React, { Component } from 'react'
+import classNames from 'classnames'
 
-import RaisedButton from 'material-ui/RaisedButton';
-import sampleSize from 'lodash.samplesize';
+import RaisedButton from 'material-ui/RaisedButton'
+import sampleSize from 'lodash.samplesize'
 
-import decks from './decks/all-decks';
+import decks from './decks/all-decks'
 
-import DeckSelector from './DeckSelector.js';
-import Stats from './Stats.js';
+import DeckSelector from './DeckSelector.js'
+import Stats from './Stats.js'
 
-import Paper from 'material-ui/Paper';
-import Toggle from 'material-ui/Toggle';
+import Paper from 'material-ui/Paper'
+import Toggle from 'material-ui/Toggle'
 
-import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-import AppBar from 'material-ui/AppBar';
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
+import AppBar from 'material-ui/AppBar'
 
-import injectTapEventPlugin from 'react-tap-event-plugin';
-injectTapEventPlugin();
+import injectTapEventPlugin from 'react-tap-event-plugin'
+injectTapEventPlugin()
 
-import { findDeck } from './lib/decks.js';
+import { findDeck } from './lib/decks.js'
 
 
-import './App.css';
+import './App.css'
 
 
 function Card({value, status}) {
-  let style = {};
+  let style = {}
   if (value.endsWith('jpg') || value.endsWith('png')) {
     style = {
       backgroundImage: `url(${value})`,
@@ -47,7 +47,7 @@ function Card({value, status}) {
 
 class App extends Component {
   constructor(props) {
-    super(props);
+    super(props)
     this.state = {
       random: false,
       answers: [],
@@ -63,18 +63,18 @@ class App extends Component {
       stats: {},
       hint: '',
       userData: {}
-    };
+    }
 
-    this.handleDeckSelected = this.handleDeckSelected.bind(this);
-    this.nextCard = this.nextCard.bind(this);
-    this.resetAnswer = this.resetAnswer.bind(this);
-    this.toggleRandom = this.toggleRandom.bind(this);
-    this.handleKeyUp = this.handleKeyUp.bind(this);
+    this.handleDeckSelected = this.handleDeckSelected.bind(this)
+    this.nextCard = this.nextCard.bind(this)
+    this.resetAnswer = this.resetAnswer.bind(this)
+    this.toggleRandom = this.toggleRandom.bind(this)
+    this.handleKeyUp = this.handleKeyUp.bind(this)
   }
 
   componentDidMount() {
-    this.getRandomAnswers();
-    window.addEventListener('keypress', this.handleKeyUp);
+    this.getRandomAnswers()
+    window.addEventListener('keypress', this.handleKeyUp)
   }
 
   showAnswer() {
@@ -84,73 +84,73 @@ class App extends Component {
   }
 
   handleKeyUp(event) {
-    event.preventDefault();
+    event.preventDefault()
     const keyMap = {
       v: 0,
       b: 1,
       n: 2
-    };
-    if (event.key === ' ') {
-      this.showAnswer();
-      return;
     }
-    const index = keyMap[event.key];
+    if (event.key === ' ') {
+      this.showAnswer()
+      return
+    }
+    const index = keyMap[event.key]
     if (!isNaN(index)) {
-      this.checkAnswer(this.state.answers[index].a);
+      this.checkAnswer(this.state.answers[index].a)
     }
   }
 
   handleDeckSelected(event, index, value) {
-    const newDeck = findDeck(value, decks);
+    const newDeck = findDeck(value, decks)
     this.setState({
       deck: newDeck,
       linear: typeof newDeck.linear === 'boolean' ?  newDeck.linear : false
-    },this.getRandomAnswers);
+    },this.getRandomAnswers)
   }
 
   nextCard() {
-    let currentIndex;
+    let currentIndex
     if (this.state.random) {
-        currentIndex = Math.floor(Math.random() * this.state.deck.cards.length);
+        currentIndex = Math.floor(Math.random() * this.state.deck.cards.length)
     } else {
-        const nextIndex = this.state.currentIndex + 1;
-        currentIndex = nextIndex <= this.state.deck.cards.length - 1 ? nextIndex : 0;
+        const nextIndex = this.state.currentIndex + 1
+        currentIndex = nextIndex <= this.state.deck.cards.length - 1 ? nextIndex : 0
     }
     this.setState({
       currentIndex,
       answer: '',
       status: 'normal'
-    }, this.getRandomAnswers);
+    }, this.getRandomAnswers)
   }
 
   getRandomAnswers() {
-    const numberAnswers = 3;
-    const currentCard = this.getCurrentCard();
+    const numberAnswers = 3
+    const currentCard = this.getCurrentCard()
     const filteredCards = this.state.deck.cards
       .filter((card) => card.a !== currentCard.a)
-    let res = sampleSize(filteredCards, numberAnswers);
+    let res = sampleSize(filteredCards, numberAnswers)
     // TODO put in random place
-    res[Math.floor(Math.random() * numberAnswers)] = currentCard;
+    res[Math.floor(Math.random() * numberAnswers)] = currentCard
     this.setState({
       answers: res
-    });
+    })
   }
 
   resetAnswer() {
     this.setState({
       status: 'normal',
       answer: ''
-    });
+    })
   }
 
   checkAnswer(answer) {
-    this.setState({answer});
+    this.setState({answer})
     if (answer === this.getCurrentCard().a) {
-      this.setState({status: 'correct'});
-      setTimeout(this.nextCard, 500);
+      this.setState({status: 'correct'})
+      setTimeout(this.nextCard, 500)
     } else {
       this.setState({status: 'wrong'}, () => {
-        setTimeout(this.resetAnswer, 500);
+        setTimeout(this.resetAnswer, 500)
       })
     }
   }
@@ -158,7 +158,7 @@ class App extends Component {
   toggleRandom() {
       this.setState({
         random: !this.state.random
-      });
+      })
   }
 
   getCurrentCard() {
@@ -166,8 +166,8 @@ class App extends Component {
   }
 
   render() {
-    const deck = this.state.deck;
-    const currentCard = this.getCurrentCard();
+    const deck = this.state.deck
+    const currentCard = this.getCurrentCard()
 
     return (
       <MuiThemeProvider>
@@ -217,8 +217,8 @@ class App extends Component {
           </div>
         </div>
       </MuiThemeProvider>
-    );
+    )
   }
 }
 
-export default App;
+export default App
