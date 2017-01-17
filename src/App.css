@@ -8,6 +8,7 @@ html {
 
 .card {
   text-align: center;
+  overflow: hidden;
   width: 100%;
   font-size: 40px;
   padding: 20px;
@@ -15,6 +16,7 @@ html {
 }
 
 .button-container {
+  width: 100%;
   align-items: center;
   display: flex;
   flex-wrap: wrap;
@@ -76,5 +78,5 @@ input {
 
 .card--correct input,
 .card--wrong input {
-  color: #FFF !important;  
+  color: #FFF !important;
 }

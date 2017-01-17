@@ -30,7 +30,7 @@ function Card({value, status}) {
     style = {
       backgroundImage: `url(${value})`,
       backgroundSize: 'cover',
-      height: '300px',
+      height: '30vh',
       color: 'transparent'
     }
   }
