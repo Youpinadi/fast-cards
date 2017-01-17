@@ -12,11 +12,22 @@ export default function Stats({deck, stats, currentIndex}) {
          >
           {
             deck.cards.map((card, index) => {
+              const isImage = card.q.endsWith('jpg') || card.q.endsWith('png');
+              let style = {};
+              if (isImage) {
+                style = {
+                  backgroundImage: `url(${card.q})`,
+                  backgroundSize: 'cover',
+                  width: '80px'
+                }
+              }
+
               return <Chip
                         className={classNames(
                             'chip',
                             {'chip--selected': index === currentIndex}
                         )}
+                        style={style}
                         key={card.q}
                       >
                         <Avatar
@@ -24,9 +35,15 @@ export default function Stats({deck, stats, currentIndex}) {
                         >
                           0%
                         </Avatar>
-                        <span title={card.a}>
-                          {card.q}
-                        </span>
+                        {
+                          !isImage
+                          ? (
+                            <span title={card.a}>
+                              {card.q}
+                            </span>
+                          )
+                          : null
+                        }
                     </Chip>
             })
           }

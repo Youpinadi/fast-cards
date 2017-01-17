@@ -1,14 +1,10 @@
 import React, { Component } from 'react';
 import classNames from 'classnames';
 
-import hiragana from './decks/hiragana.js';
-import katakana from './decks/katakana.js';
-import capitals from './decks/capitals.js';
-import basicFrench from './decks/basic-french.js';
-
 import RaisedButton from 'material-ui/RaisedButton';
 import sampleSize from 'lodash.samplesize';
 
+import decks from './decks/all-decks';
 
 import DeckSelector from './DeckSelector.js';
 import Stats from './Stats.js';
@@ -27,16 +23,21 @@ import { findDeck } from './lib/decks.js';
 
 import './App.css';
 
-const decks = [
-  hiragana,
-  katakana,
-  capitals,
-  basicFrench
-];
 
 function Card({value, status}) {
+  let style = {};
+  if (value.endsWith('jpg') || value.endsWith('png')) {
+    style = {
+      backgroundImage: `url(${value})`,
+      backgroundSize: 'cover',
+      height: '300px',
+      color: 'transparent'
+    }
+  }
+
   return <Paper
             className={classNames('card', `card--${status}`)}
+            style={style}
             zDepth={1}
          >
           {value}
@@ -100,9 +101,11 @@ class App extends Component {
   }
 
   handleDeckSelected(event, index, value) {
+    const newDeck = findDeck(value, decks);
     this.setState({
-      deck: findDeck(value, decks)
-    });
+      deck: newDeck,
+      linear: typeof newDeck.linear === 'boolean' ?  newDeck.linear : false
+    },this.getRandomAnswers);
   }
 
   nextCard() {
