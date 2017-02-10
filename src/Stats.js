@@ -28,7 +28,7 @@ export default function Stats({deck, stats, currentIndex}) {
                             {'chip--selected': index === currentIndex}
                         )}
                         style={style}
-                        key={card.q}
+                        key={index}
                       >
                         <Avatar
                           style={{fontSize: '10px'}}

@@ -2,13 +2,10 @@ import React, { Component } from 'react'
 import classNames from 'classnames'
 
 import RaisedButton from 'material-ui/RaisedButton'
-import sampleSize from 'lodash.samplesize'
-
-import decks from './decks/all-decks'
 
 import DeckSelector from './DeckSelector.js'
 import Stats from './Stats.js'
-
+import Card from './Card.jsx';
 import Paper from 'material-ui/Paper'
 import Toggle from 'material-ui/Toggle'
 
@@ -18,72 +15,30 @@ import AppBar from 'material-ui/AppBar'
 import injectTapEventPlugin from 'react-tap-event-plugin'
 injectTapEventPlugin()
 
-import { findDeck } from './lib/decks.js'
+import { observer } from 'mobx-react';
 
 
 import './App.css'
 
-
-function Card({value, status}) {
-  let style = {}
-  if (value.endsWith('jpg') || value.endsWith('png')) {
-    style = {
-      backgroundImage: `url(${value})`,
-      backgroundSize: 'cover',
-      height: '30vh',
-      color: 'transparent'
-    }
-  }
-
-  return <Paper
-            className={classNames('card', `card--${status}`)}
-            style={style}
-            zDepth={1}
-         >
-          {value}
-        </Paper>
-}
-
-
+@observer
 class App extends Component {
   constructor(props) {
     super(props)
-    this.state = {
-      random: false,
-      answers: [],
-      consecutiveGoodAnswers: 0,
-      currentIndex: 0,
-      previousCard: null,
-      flipped: false,
-      repeatLastCard: false,
-      input: '',
-      inputClass: '',
-      decks: decks,
-      deck: decks[0],
-      stats: {},
-      hint: '',
-      userData: {}
-    }
-
     this.handleDeckSelected = this.handleDeckSelected.bind(this)
-    this.nextCard = this.nextCard.bind(this)
-    this.resetAnswer = this.resetAnswer.bind(this)
-    this.toggleRandom = this.toggleRandom.bind(this)
     this.handleKeyUp = this.handleKeyUp.bind(this)
   }
 
   componentDidMount() {
-    this.getRandomAnswers()
     window.addEventListener('keypress', this.handleKeyUp)
   }
 
-  showAnswer() {
-    this.setState({
-      answer: this.getCurrentCard().a
-    })
-  }
-
   handleKeyUp(event) {
+    let {
+      answer,
+      currentCard,
+      randomAnswers
+    } = this.props.appState
+
     event.preventDefault()
     const keyMap = {
       v: 0,
@@ -91,83 +46,33 @@ class App extends Component {
       n: 2
     }
     if (event.key === ' ') {
-      this.showAnswer()
+      answer = currentCard.a;
       return
     }
     const index = keyMap[event.key]
     if (!isNaN(index)) {
-      this.checkAnswer(this.state.answers[index].a)
+      answer = randomAnswers[index].a
     }
   }
 
   handleDeckSelected(event, index, value) {
-    const newDeck = findDeck(value, decks)
-    this.setState({
-      deck: newDeck,
-      linear: typeof newDeck.linear === 'boolean' ?  newDeck.linear : false
-    },this.getRandomAnswers)
-  }
-
-  nextCard() {
-    let currentIndex
-    if (this.state.random) {
-        currentIndex = Math.floor(Math.random() * this.state.deck.cards.length)
-    } else {
-        const nextIndex = this.state.currentIndex + 1
-        currentIndex = nextIndex <= this.state.deck.cards.length - 1 ? nextIndex : 0
-    }
-    this.setState({
-      currentIndex,
-      answer: '',
-      status: 'normal'
-    }, this.getRandomAnswers)
-  }
-
-  getRandomAnswers() {
-    const numberAnswers = 3
-    const currentCard = this.getCurrentCard()
-    const filteredCards = this.state.deck.cards
-      .filter((card) => card.a !== currentCard.a)
-    let res = sampleSize(filteredCards, numberAnswers)
-    // TODO put in random place
-    res[Math.floor(Math.random() * numberAnswers)] = currentCard
-    this.setState({
-      answers: res
-    })
-  }
-
-  resetAnswer() {
-    this.setState({
-      status: 'normal',
-      answer: ''
-    })
-  }
-
-  checkAnswer(answer) {
-    this.setState({answer})
-    if (answer === this.getCurrentCard().a) {
-      this.setState({status: 'correct'})
-      setTimeout(this.nextCard, 500)
-    } else {
-      this.setState({status: 'wrong'}, () => {
-        setTimeout(this.resetAnswer, 500)
-      })
-    }
-  }
-
-  toggleRandom() {
-      this.setState({
-        random: !this.state.random
-      })
-  }
-
-  getCurrentCard() {
-    return this.state.deck.cards[this.state.currentIndex]
+    this.props.appState.deckName = value;
   }
 
   render() {
-    const deck = this.state.deck
-    const currentCard = this.getCurrentCard()
+    let {
+      decks,
+      deckName,
+      currentCard,
+      cardIndex,
+      currentDeck,
+      cardClassName,
+      random,
+      toggleRandom,
+      randomAnswers,
+      setAnswer,
+      answer
+    } = this.props.appState
 
     return (
       <MuiThemeProvider>
@@ -180,32 +85,32 @@ class App extends Component {
             <DeckSelector
               className="selector"
               decks={decks}
-              value={this.state.deck.name}
+              value={deckName}
               onDeckSelected={this.handleDeckSelected}
             />
             <Toggle
-               className="toggle"
-               label="Linear mode"
-               value={this.state.random}
-               onToggle={this.toggleRandom}
-               defaultToggled={true}
-             />
-            <Card value={currentCard.q}/>
+              className="toggle"
+              label="Linear mode"
+              value={random}
+              onToggle={toggleRandom}
+              defaultToggled={true}
+            />
+            <Card value={currentCard.q} />
             <Paper
-              className={classNames('card', `card--${this.state.status}`)}
+              className={classNames('card', `card--${cardClassName}`)}
             >
               <input
                 type="text"
-                value={this.state.answer}
+                value={answer}
               />
             </Paper>
             {
-              this.state.answers.map((answer) => (
+              randomAnswers.map((answer) => (
                 <RaisedButton
                   key={`button-${answer.a}`}
                   className="answer-button"
                   label={`${answer.a}`}
-                  onClick={this.checkAnswer.bind(this, answer.a)}
+                  onClick={setAnswer.bind(this, answer.a)}
                 />
               ))
             }
@@ -213,7 +118,7 @@ class App extends Component {
               className="learn"
               label="learn (space)"
             />
-            <Stats deck={deck} currentIndex={this.state.currentIndex}/>
+            <Stats deck={currentDeck} currentIndex={cardIndex} />
           </div>
         </div>
       </MuiThemeProvider>

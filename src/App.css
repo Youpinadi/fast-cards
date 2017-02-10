@@ -59,12 +59,12 @@ html {
   transform: scale(1.2);
 }
 
-.card--correct {
-  background-color: green !important;
+.card--ok {
+  background-color: rgb(113, 175, 0) !important;
   color: #FFF !important;
 }
-.card--wrong {
-  background-color: red !important;
+.card--ko {
+  background-color: rgb(218, 81, 36) !important;
 }
 
 input {
